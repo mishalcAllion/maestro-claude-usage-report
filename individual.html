@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
   <script src="theme.js"></script>
   <script src="data.js"></script>
   <script>window.CURRENT_PAGE = 'individual';</script>
@@ -20,12 +20,18 @@
     ::-webkit-scrollbar-track { background: #0f172a; }
     ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
     ::-webkit-scrollbar-thumb:hover { background: #475569; }
-    .export-mode #nav-root { display: none !important; }
-    .export-mode main { margin-left: 0 !important; }
-    .export-mode [data-hide-pdf] { display: none !important; }
-    .export-mode [data-show-pdf] { display: flex !important; }
-    .export-mode .pdf-no-break { page-break-inside: avoid; break-inside: avoid; }
-    .export-mode .pdf-page-break-before { page-break-before: always; break-before: page; }
+    @media print {
+      @page { size: A4 landscape; margin: 10mm; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+      body { background: #020617 !important; }
+      #nav-root, #mobile-menu-toggle, #mobile-overlay { display: none !important; }
+      main { margin-left: 0 !important; }
+      [data-hide-pdf] { display: none !important; }
+      [data-show-pdf] { display: flex !important; }
+      .bg-slate-900 { background-color: #0f172a !important; }
+      .bg-slate-950 { background-color: #020617 !important; }
+      .border-slate-800 { border-color: #1e293b !important; }
+    }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-300 font-sans min-h-screen antialiased">
