@@ -16,30 +16,31 @@ function exportToPDF() {
   `;
   document.body.appendChild(toast);
 
-  // Add export-mode class to hide controls and add page-break rules
+  // Add export-mode class to hide controls
   document.body.classList.add('export-mode');
 
-  // Force desktop layout and explicit dark background so html2canvas captures correctly
-  const prevStyles = {
-    paddingTop: element.style.paddingTop,
-    backgroundColor: element.style.backgroundColor,
-    minWidth: element.style.minWidth,
-    maxWidth: element.style.maxWidth,
-  };
-  element.style.paddingTop = '24px';
-  element.style.backgroundColor = '#020617';
-  element.style.minWidth = '1040px';
-  element.style.maxWidth = '1040px';
+  // Save original styles
+  const savedStyles = element.getAttribute('style') || '';
+
+  // Force layout for PDF capture:
+  // A4 landscape = 297mm wide, 6mm margins each side = 285mm content
+  // At ~3.78px/mm = ~1077px. Use 960px to be safe with padding.
+  // Remove mx-auto centering and set explicit width.
+  element.style.cssText = `
+    width: 960px !important;
+    max-width: 960px !important;
+    min-width: 960px !important;
+    margin: 0 !important;
+    padding: 20px 24px !important;
+    background-color: #020617 !important;
+  `;
 
   const restoreStyles = () => {
-    element.style.paddingTop = prevStyles.paddingTop;
-    element.style.backgroundColor = prevStyles.backgroundColor;
-    element.style.minWidth = prevStyles.minWidth;
-    element.style.maxWidth = prevStyles.maxWidth;
+    element.style.cssText = savedStyles;
   };
 
   const options = {
-    margin: [8, 8, 8, 8],
+    margin: [6, 6, 6, 6],
     filename: `Claude_Usage_Report_${monthLabel}.pdf`,
     image: { type: 'jpeg', quality: 0.95 },
     html2canvas: {
@@ -48,7 +49,8 @@ function exportToPDF() {
       logging: false,
       useCORS: true,
       letterRendering: true,
-      windowWidth: 1200,
+      width: 960,
+      windowWidth: 960,
     },
     jsPDF: {
       unit: 'mm',
