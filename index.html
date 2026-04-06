@@ -104,6 +104,8 @@
       container.innerHTML = `
         ${Theme.pageHeader('Executive Summary', DATA.meta.organization + ' — ' + DATA.meta.team)}
 
+        <p class="text-xs text-slate-600 -mt-6 mb-6 font-mono">Last updated: ${new Date(DATA.meta.generatedDate + 'T00:00:00+05:30').toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Colombo' })} IST</p>
+
         <!-- Stat Cards -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           ${Theme.statCard('Total Cost', Theme.formatCost(summary.totalCost), month.label)}
