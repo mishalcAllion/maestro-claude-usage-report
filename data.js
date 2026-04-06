@@ -148,6 +148,7 @@ const DEFAULT_DATA = {
           short: 'Kalpa',
           role: 'Mobile Backend / Logic',
           color: '#22c55e',
+          note: 'Partial data — report covers Mar 18-31 only (history reset after re-sign-in)',
           totalCost: 189.03,
           totalTokens: 484100,
           inputTokens: 186100,

@@ -38,7 +38,7 @@
   </main>
 
   <script>
-    let summaryView = 'cost';
+    let summaryView = 'tokens';
 
     function renderSummary() {
       const container = document.getElementById('export-content');
@@ -112,8 +112,8 @@
         <!-- View Toggle -->
         <div class="flex items-center gap-2 mb-6" data-hide-pdf>
           <span class="text-xs text-slate-500 uppercase tracking-wider mr-2">View:</span>
-          ${toggleBtn('Cost', 'cost')}
           ${toggleBtn('Tokens', 'tokens')}
+          ${toggleBtn('Cost', 'cost')}
         </div>
 
         <!-- 2-Column Layout -->

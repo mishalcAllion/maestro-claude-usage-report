@@ -42,6 +42,10 @@
           <!-- Footer Stats -->
           <div class="p-6 border-t border-slate-800 space-y-3">
             <div>
+              <p class="text-xs text-slate-500 uppercase tracking-wider">Total Tokens</p>
+              <p class="text-lg font-semibold text-slate-100 font-mono">${Theme.formatTokens(summary.totalTokens)}</p>
+            </div>
+            <div>
               <p class="text-xs text-slate-500 uppercase tracking-wider">Total Cost</p>
               <p class="text-lg font-semibold text-slate-100 font-mono">${Theme.formatCost(summary.totalCost)}</p>
             </div>

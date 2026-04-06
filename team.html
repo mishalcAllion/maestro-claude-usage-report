@@ -136,6 +136,15 @@
 
                 <!-- Token Bar -->
                 ${Charts.tokenBar(m.inputTokens, m.outputTokens, m.totalTokens)}
+
+                ${m.note ? `
+                  <div class="flex items-start gap-2 mt-3 p-2 bg-amber-500/10 border border-amber-500/20 rounded">
+                    <svg class="w-3.5 h-3.5 text-amber-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <p class="text-[10px] text-amber-300">${Theme.escapeHtml(m.note)}</p>
+                  </div>
+                ` : ''}
               </div>
             `;
           }).join('')}
@@ -167,6 +176,7 @@
                         <div class="flex items-center gap-2">
                           <span class="w-2 h-2 rounded-full" style="background:${m.color}"></span>
                           <span class="text-sm text-slate-300">${Theme.escapeHtml(m.short)}</span>
+                          ${m.note ? '<span class="text-amber-400 text-[10px]" title="' + Theme.escapeHtml(m.note) + '">*</span>' : ''}
                         </div>
                       </td>
                       <td class="px-4 py-3 text-right text-sm font-mono text-slate-300">${Theme.formatCost(m.totalCost)}</td>
