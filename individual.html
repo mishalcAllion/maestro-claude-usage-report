@@ -99,12 +99,22 @@
               <h2 class="text-xl font-semibold text-slate-100">${Theme.escapeHtml(member.name)}</h2>
               <p class="text-sm text-slate-400 mt-1">${Theme.escapeHtml(member.role)}</p>
               ${member.pdfFile ? `
-                <a href="${member.pdfFile}" target="_blank" class="inline-flex items-center gap-2 mt-3 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-slate-300 hover:bg-slate-700 hover:border-slate-600 transition-colors">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                  </svg>
-                  View Full ClaudeScope Report
-                </a>
+                <div class="flex flex-wrap gap-2 mt-3">
+                  <a href="${member.pdfFile}" target="_blank" class="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-slate-300 hover:bg-slate-700 hover:border-slate-600 transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                    </svg>
+                    ClaudeScope Report${member.pdfFile2 ? ' 1' : ''}
+                  </a>
+                  ${member.pdfFile2 ? `
+                    <a href="${member.pdfFile2}" target="_blank" class="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-slate-300 hover:bg-slate-700 hover:border-slate-600 transition-colors">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                      </svg>
+                      ClaudeScope Report 2
+                    </a>
+                  ` : ''}
+                </div>
               ` : ''}
             </div>
           </div>
@@ -123,7 +133,7 @@
           <!-- Token Split -->
           <div class="bg-slate-900 border border-slate-800 rounded-lg p-6">
             <h3 class="text-sm font-semibold text-slate-100 mb-6 uppercase tracking-wider">Token Distribution</h3>
-            ${Charts.donut(tokenSplit, 160)}
+            ${Charts.donut(tokenSplit, 160, Theme.formatTokens)}
           </div>
 
           <!-- Quick Stats -->
