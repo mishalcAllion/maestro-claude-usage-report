@@ -43,21 +43,24 @@
       const summary = month.summary;
       const computed = month.computed;
 
+      const displayName = (m) => m.note ? m.short + ' *' : m.short;
+
       // Projects breadth data
       const projectsData = month.activeMembers.map(m => ({
-        name: m.short,
+        name: displayName(m),
         value: m.projects,
         color: m.color,
         displayValue: `${m.projects} projects`,
       })).sort((a, b) => b.value - a.value);
 
       // Token efficiency data
-      const efficiencyData = computed.tokenEfficiency.map(e => ({
-        name: e.name,
+      const efficiencyData = computed.tokenEfficiency.map(e => {
+        const member = month.activeMembers.find(m => m.id === e.id);
+        return { name: member?.note ? e.name + ' *' : e.name,
         value: e.ratio,
         color: e.color,
-        displayValue: `${e.ratio.toFixed(2)}x`,
-      }));
+        value: e.ratio, color: e.color, displayValue: `${e.ratio.toFixed(2)}x`,
+      }; });
 
       container.innerHTML = `
         ${Theme.pageHeader('Adoption Metrics', 'Team engagement and usage patterns')}
@@ -75,7 +78,7 @@
           <div class="space-y-6">
             ${computed.adoptionRates.map(a => {
               const member = month.activeMembers.find(m => m.id === a.id);
-              return Charts.progressBar(a.activeDays, month.workingDays, member.color, member.short);
+              return Charts.progressBar(a.activeDays, month.workingDays, member.color, displayName(member));
             }).join('')}
           </div>
         </div>

@@ -42,19 +42,24 @@
       const month = DATA.currentMonth;
       const summary = month.summary;
 
+      const displayName = (m) => m.note ? m.short + ' *' : m.short;
+
       // Cost per person data
       const costPerPerson = month.computed.costRanking.map(m => ({
-        name: m.short,
+        name: displayName(m),
         value: m.totalCost,
         color: m.color,
       }));
 
       // Cost per active day data
-      const costPerDayData = month.computed.costPerActiveDay;
+      const costPerDayData = month.computed.costPerActiveDay.map(d => {
+        const member = month.activeMembers.find(m => m.id === d.id);
+        return { ...d, name: member?.note ? d.name + ' *' : d.name };
+      });
 
       // Cost distribution for donut
       const costDistribution = month.activeMembers.map(m => ({
-        label: m.short,
+        label: displayName(m),
         value: m.totalCost,
         color: m.color,
       })).sort((a, b) => b.value - a.value);

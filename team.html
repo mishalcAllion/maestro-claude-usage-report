@@ -92,7 +92,7 @@
                       ${Theme.initials(m.name)}
                     </div>
                     <div>
-                      <h3 class="text-sm font-semibold text-slate-100">${Theme.escapeHtml(m.name)}</h3>
+                      <h3 class="text-sm font-semibold text-slate-100">${Theme.escapeHtml(m.name)}${m.note ? ' <span class="text-amber-400">*</span>' : ''}</h3>
                       <p class="text-xs text-slate-500">${Theme.escapeHtml(m.role)}</p>
                     </div>
                   </div>
@@ -176,7 +176,7 @@
                         <div class="flex items-center gap-2">
                           <span class="w-2 h-2 rounded-full" style="background:${m.color}"></span>
                           <span class="text-sm text-slate-300">${Theme.escapeHtml(m.short)}</span>
-                          ${m.note ? '<span class="text-amber-400 text-[10px]" title="' + Theme.escapeHtml(m.note) + '">*</span>' : ''}
+                          ${m.note ? '<span class="text-amber-400 font-bold" title="' + Theme.escapeHtml(m.note) + '">*</span>' : ''}
                         </div>
                       </td>
                       <td class="px-4 py-3 text-right text-sm font-mono text-slate-300">${Theme.formatCost(m.totalCost)}</td>

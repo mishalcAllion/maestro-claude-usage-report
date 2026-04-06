@@ -26,10 +26,10 @@ function exportToPDF() {
     minWidth: element.style.minWidth,
     maxWidth: element.style.maxWidth,
   };
-  element.style.paddingTop = '32px';
+  element.style.paddingTop = '24px';
   element.style.backgroundColor = '#020617';
-  element.style.minWidth = '1200px';
-  element.style.maxWidth = '1200px';
+  element.style.minWidth = '1040px';
+  element.style.maxWidth = '1040px';
 
   const restoreStyles = () => {
     element.style.paddingTop = prevStyles.paddingTop;
@@ -48,8 +48,7 @@ function exportToPDF() {
       logging: false,
       useCORS: true,
       letterRendering: true,
-      windowWidth: 1400,
-      windowHeight: 900,
+      windowWidth: 1200,
     },
     jsPDF: {
       unit: 'mm',
