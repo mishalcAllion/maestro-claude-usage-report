@@ -61,7 +61,7 @@ const Theme = {
           <h1 class="text-2xl font-semibold text-slate-100">${title}</h1>
           <p class="text-sm text-slate-400 mt-1">${subtitle || DATA.meta.organization + ' — ' + DATA.meta.team}</p>
         </div>
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3" data-hide-pdf>
           <select id="month-selector" class="bg-slate-800 border border-slate-700 text-slate-300 rounded-lg px-3 py-1.5 text-sm font-mono focus:outline-none focus:border-slate-600">
             ${DATA.months.map(m => `<option value="${m.id}" ${m.id === DATA.selectedMonthId ? 'selected' : ''}>${m.label}</option>`).join('')}
           </select>
@@ -69,6 +69,9 @@ const Theme = {
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
             Download PDF
           </button>
+        </div>
+        <div class="hidden items-center" data-show-pdf>
+          <span class="text-sm text-slate-400 font-mono">${DATA.currentMonth.label}</span>
         </div>
       </div>`;
   },

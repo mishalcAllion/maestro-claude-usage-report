@@ -3,17 +3,21 @@
 const Charts = {
   donut(data, size = 180) {
     const total = data.reduce((sum, item) => sum + item.value, 0);
+    const r = size / 2;
+    const strokeWidth = size * 0.2;
+    const innerR = r - strokeWidth / 2;
+    const circumference = 2 * Math.PI * innerR;
 
-    // Build conic-gradient stops
-    let gradientStops = [];
-    let currentAngle = 0;
-
-    data.forEach(item => {
-      const percentage = (item.value / total) * 100;
-      const nextAngle = currentAngle + percentage;
-      gradientStops.push(`${item.color} ${currentAngle}% ${nextAngle}%`);
-      currentAngle = nextAngle;
-    });
+    // Build SVG arcs
+    let offset = 0;
+    const arcs = data.map(item => {
+      const pct = item.value / total;
+      const dashLen = pct * circumference;
+      const dashGap = circumference - dashLen;
+      const arc = `<circle cx="${r}" cy="${r}" r="${innerR}" fill="none" stroke="${item.color}" stroke-width="${strokeWidth}" stroke-dasharray="${dashLen} ${dashGap}" stroke-dashoffset="${-offset}" transform="rotate(-90 ${r} ${r})"/>`;
+      offset += dashLen;
+      return arc;
+    }).join('');
 
     const legendHTML = data.map(item => {
       const percentage = ((item.value / total) * 100).toFixed(1);
@@ -33,8 +37,10 @@ const Charts = {
     return `
       <div class="flex flex-col items-center">
         <div class="relative flex items-center justify-center" style="width:${size}px;height:${size}px">
-          <div class="absolute inset-0 rounded-full" style="background:conic-gradient(${gradientStops.join(',')})"></div>
-          <div class="absolute inset-[20%] rounded-full bg-slate-900 flex items-center justify-center">
+          <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
+            ${arcs}
+          </svg>
+          <div class="absolute inset-0 flex items-center justify-center">
             <div class="text-center">
               <p class="text-xs text-slate-500 uppercase tracking-wider">Total</p>
               <p class="text-lg font-semibold text-slate-100 font-mono mt-0.5">${Theme.formatCost(total)}</p>
@@ -61,7 +67,9 @@ const Charts = {
             <span class="text-xs text-slate-400 truncate">${Theme.escapeHtml(item.name)}</span>
           </div>
           <div class="flex-1 relative h-6 bg-slate-800 rounded overflow-hidden">
-            <div class="absolute inset-0 rounded transition-all duration-500" style="background:${item.color}40;border-right:2px solid ${item.color};width:${widthPct}%"></div>
+            <div class="absolute inset-y-0 left-0 rounded" style="background:${item.color};opacity:0.35;width:${widthPct}%"></div>
+            <div class="absolute inset-y-0 left-0 rounded" style="background:${item.color};width:${Math.min(widthPct, 3)}px;"></div>
+            <div class="absolute inset-y-0 rounded" style="border-right:2px solid ${item.color};width:${widthPct}%"></div>
           </div>
           <span class="text-xs font-medium text-slate-300 font-mono w-24 text-right">${displayVal}</span>
         </div>`;
@@ -78,7 +86,7 @@ const Charts = {
           <span class="text-xs font-medium text-slate-300 font-mono">${value} / ${max} days</span>
         </div>
         <div class="relative h-2 bg-slate-800 rounded-full overflow-hidden">
-          <div class="absolute inset-y-0 left-0 rounded-full transition-all duration-500" style="background:${color};width:${Math.min(percentage, 100)}%"></div>
+          <div class="absolute inset-y-0 left-0 rounded-full" style="background:${color};width:${Math.min(percentage, 100)}%"></div>
         </div>
         <p class="text-[10px] text-slate-500 text-right">${Theme.formatPercent(percentage)} adoption</p>
       </div>`;
@@ -95,8 +103,8 @@ const Charts = {
           <span class="text-slate-400 font-mono">${Theme.formatTokens(totalTokens)}</span>
         </div>
         <div class="relative h-3 bg-slate-800 rounded-full overflow-hidden flex">
-          <div class="transition-all duration-500" style="background:#22c55e;width:${inputPct}%" title="Input: ${Theme.formatTokens(inputTokens)}"></div>
-          <div class="transition-all duration-500" style="background:#a855f7;width:${outputPct}%" title="Output: ${Theme.formatTokens(outputTokens)}"></div>
+          <div style="background:#22c55e;width:${inputPct}%" title="Input: ${Theme.formatTokens(inputTokens)}"></div>
+          <div style="background:#a855f7;width:${outputPct}%" title="Output: ${Theme.formatTokens(outputTokens)}"></div>
         </div>
         <div class="flex items-center justify-between text-[10px]">
           <div class="flex items-center gap-1.5">

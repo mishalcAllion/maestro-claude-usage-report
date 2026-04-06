@@ -1,4 +1,4 @@
-// export.js — PDF export
+// export.js — PDF export with proper formatting
 
 function exportToPDF() {
   const element = document.getElementById('export-content');
@@ -16,42 +16,53 @@ function exportToPDF() {
   `;
   document.body.appendChild(toast);
 
+  // Add export-mode class to hide controls and add page-break rules
+  document.body.classList.add('export-mode');
+
   const options = {
-    margin: 10,
+    margin: [8, 8, 8, 8],
     filename: `Claude_Usage_Report_${monthLabel}.pdf`,
-    image: { type: 'jpeg', quality: 0.98 },
+    image: { type: 'jpeg', quality: 0.95 },
     html2canvas: {
       scale: 2,
       backgroundColor: '#020617',
       logging: false,
+      useCORS: true,
+      letterRendering: true,
     },
     jsPDF: {
       unit: 'mm',
       format: 'a4',
-      orientation: 'landscape'
+      orientation: 'landscape',
+    },
+    pagebreak: {
+      mode: ['avoid-all', 'css'],
+      before: '.pdf-page-break-before',
+      after: '.pdf-page-break-after',
+      avoid: '.pdf-no-break',
     },
   };
 
   html2pdf().set(options).from(element).save().then(() => {
+    document.body.classList.remove('export-mode');
     toast.innerHTML = `
       <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
       </svg>
-      <span class="text-sm text-slate-300">PDF downloaded successfully!</span>
+      <span class="text-sm text-slate-300">PDF downloaded!</span>
     `;
-
     setTimeout(() => {
       toast.classList.add('opacity-0', 'transition-opacity', 'duration-500');
       setTimeout(() => toast.remove(), 500);
     }, 2000);
   }).catch(err => {
+    document.body.classList.remove('export-mode');
     toast.innerHTML = `
       <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
       </svg>
       <span class="text-sm text-slate-300">PDF export failed</span>
     `;
-
     setTimeout(() => toast.remove(), 3000);
     console.error('PDF export error:', err);
   });
