@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cost Analysis — Claude AI Usage Report</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="theme.js"></script>
+  <script src="data.js"></script>
+  <script>window.CURRENT_PAGE = 'cost';</script>
+  <script src="nav.js"></script>
+  <script src="charts.js"></script>
+  <script src="export.js"></script>
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-300 font-sans min-h-screen antialiased">
+  <div id="nav-root"></div>
+  <main class="ml-0 lg:ml-[260px] min-h-screen">
+    <div id="export-content" class="max-w-[1280px] mx-auto px-6 py-8 pt-14 lg:pt-8">
+      <!-- Content rendered by JS -->
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const container = document.getElementById('export-content');
+      const month = DATA.currentMonth;
+      const summary = month.summary;
+
+      // Cost per person data
+      const costPerPerson = month.computed.costRanking.map(m => ({
+        name: m.short,
+        value: m.totalCost,
+        color: m.color,
+      }));
+
+      // Cost per active day data
+      const costPerDayData = month.computed.costPerActiveDay;
+
+      // Cost distribution for donut
+      const costDistribution = month.activeMembers.map(m => ({
+        label: m.short,
+        value: m.totalCost,
+        color: m.color,
+      })).sort((a, b) => b.value - a.value);
+
+      container.innerHTML = `
+        ${Theme.pageHeader('Cost Analysis', 'Detailed cost breakdown and efficiency metrics')}
+
+        <!-- Stat Cards -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
+          ${Theme.statCard('Total Spend', Theme.formatCost(summary.totalCost), month.label)}
+          ${Theme.statCard('Avg Cost/Person', Theme.formatCost(summary.avgCostPerPerson), summary.teamSize + ' active members')}
+          ${Theme.statCard('Avg Cost/Active Day', Theme.formatCost(summary.avgCostPerActiveDay), summary.totalActiveDays + ' total days')}
+        </div>
+
+        <!-- Cost Per Person -->
+        <div class="bg-slate-900 border border-slate-800 rounded-lg p-6 mb-6">
+          <h2 class="text-sm font-semibold text-slate-100 mb-6 uppercase tracking-wider">Cost Per Person</h2>
+          <div class="space-y-1">
+            ${Charts.horizontalBar(costPerPerson)}
+          </div>
+        </div>
+
+        <!-- Cost Per Active Day -->
+        <div class="bg-slate-900 border border-slate-800 rounded-lg p-6 mb-6">
+          <h2 class="text-sm font-semibold text-slate-100 mb-6 uppercase tracking-wider">Cost Per Active Day</h2>
+          <p class="text-xs text-slate-500 mb-4">Efficiency metric: total cost divided by active days</p>
+          <div class="space-y-1">
+            ${Charts.horizontalBar(costPerDayData)}
+          </div>
+        </div>
+
+        <!-- Cost Distribution Donut -->
+        <div class="bg-slate-900 border border-slate-800 rounded-lg p-6">
+          <h2 class="text-sm font-semibold text-slate-100 mb-6 uppercase tracking-wider">Cost Distribution</h2>
+          <div class="flex justify-center">
+            ${Charts.donut(costDistribution, 200)}
+          </div>
+        </div>
+      `;
+    });
+  </script>
+</body>
+</html>

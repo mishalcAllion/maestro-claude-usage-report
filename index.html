@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Executive Summary — Claude AI Usage Report</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="theme.js"></script>
+  <script src="data.js"></script>
+  <script>window.CURRENT_PAGE = 'summary';</script>
+  <script src="nav.js"></script>
+  <script src="charts.js"></script>
+  <script src="export.js"></script>
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-300 font-sans min-h-screen antialiased">
+  <div id="nav-root"></div>
+  <main class="ml-0 lg:ml-[260px] min-h-screen">
+    <div id="export-content" class="max-w-[1280px] mx-auto px-6 py-8 pt-14 lg:pt-8">
+      <!-- Content rendered by JS -->
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const container = document.getElementById('export-content');
+      const month = DATA.currentMonth;
+      const summary = month.summary;
+
+      // Generate key insights
+      const topUser = month.computed.costRanking[0];
+      const avgCostPerDay = summary.avgCostPerActiveDay;
+      const adoptionRate = month.computed.teamAdoptionRate;
+      const totalActiveMembers = month.activeMembers.length;
+
+      const insights = [
+        `${topUser.short} leads usage at ${Theme.formatCost(topUser.totalCost)} (${Theme.formatTokens(topUser.totalTokens)} tokens)`,
+        `Team average: ${Theme.formatCost(avgCostPerDay)} per active day`,
+        `${Theme.formatPercent(adoptionRate)} team adoption rate across ${summary.teamSize} active members`,
+        `${summary.totalActiveDays} total active days recorded`,
+        `${summary.totalProjects} unique projects tracked`,
+      ];
+
+      // Cost distribution data for donut
+      const costDistribution = month.activeMembers.map(m => ({
+        label: m.short,
+        value: m.totalCost,
+        color: m.color,
+      })).sort((a, b) => b.value - a.value);
+
+      // Activity data for horizontal bar
+      const activityData = month.computed.activityRanking.map(m => ({
+        name: m.short,
+        value: m.activeDays,
+        color: m.color,
+        displayValue: `${m.activeDays} days`,
+      }));
+
+      container.innerHTML = `
+        ${Theme.pageHeader('Executive Summary', DATA.meta.organization + ' — ' + DATA.meta.team)}
+
+        <!-- Stat Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          ${Theme.statCard('Total Cost', Theme.formatCost(summary.totalCost), month.label)}
+          ${Theme.statCard('Total Tokens', Theme.formatTokens(summary.totalTokens), 'Input + Output')}
+          ${Theme.statCard('Team Size', summary.teamSize + ' Members', summary.pendingCount + ' pending')}
+          ${Theme.statCard('Total Active Days', Theme.formatNumber(summary.totalActiveDays), 'Across all members')}
+        </div>
+
+        <!-- 2-Column Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <!-- Cost Distribution -->
+          <div class="bg-slate-900 border border-slate-800 rounded-lg p-6">
+            <h2 class="text-sm font-semibold text-slate-100 mb-6 uppercase tracking-wider">Cost Distribution</h2>
+            ${Charts.donut(costDistribution)}
+          </div>
+
+          <!-- Key Insights -->
+          <div class="bg-slate-900 border border-slate-800 rounded-lg p-6">
+            <h2 class="text-sm font-semibold text-slate-100 mb-6 uppercase tracking-wider">Key Insights</h2>
+            <div class="space-y-4">
+              ${insights.map(insight => `
+                <div class="flex items-start gap-3">
+                  <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  <p class="text-sm text-slate-300">${insight}</p>
+                </div>
+              `).join('')}
+              ${month.pendingMembers.length > 0 ? `
+                <div class="flex items-start gap-3 pt-4 border-t border-slate-800">
+                  <svg class="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  <p class="text-sm text-slate-400">Pending reports: ${month.pendingMembers.map(m => m.short).join(', ')}</p>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+
+        <!-- Team Activity -->
+        <div class="bg-slate-900 border border-slate-800 rounded-lg p-6">
+          <h2 class="text-sm font-semibold text-slate-100 mb-6 uppercase tracking-wider">Team Activity</h2>
+          <div class="space-y-1">
+            ${Charts.horizontalBar(activityData, 25)}
+          </div>
+        </div>
+      `;
+    });
+  </script>
+</body>
+</html>
