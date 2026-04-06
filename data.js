@@ -44,9 +44,9 @@ const DEFAULT_DATA = {
           ],
         },
         {
-          id: 'mobile-dev',
-          name: 'Mobile App Developer',
-          short: 'Mobile Dev',
+          id: 'thushal',
+          name: 'Thushal',
+          short: 'Thushal',
           role: 'Mobile App Development',
           color: '#ec4899',
           totalCost: 2613.81,
