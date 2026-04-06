@@ -62,17 +62,17 @@ const Charts = {
       const displayVal = item.displayValue || Theme.formatCost(item.value);
 
       return `
-        <div class="flex items-center gap-3 py-2.5">
-          <div class="flex items-center gap-2 w-32 flex-shrink-0">
-            <span class="w-2.5 h-2.5 rounded-full" style="background:${item.color}"></span>
-            <span class="text-xs text-slate-400 truncate">${Theme.escapeHtml(item.name)}</span>
+        <div class="flex items-center gap-2 sm:gap-3 py-2.5">
+          <div class="flex items-center gap-1.5 sm:gap-2 w-20 sm:w-28 flex-shrink-0">
+            <span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full flex-shrink-0" style="background:${item.color}"></span>
+            <span class="text-[11px] sm:text-xs text-slate-400 truncate">${Theme.escapeHtml(item.name)}</span>
           </div>
-          <div class="flex-1 relative h-6 bg-slate-800 rounded overflow-hidden">
+          <div class="flex-1 relative h-5 sm:h-6 bg-slate-800 rounded overflow-hidden">
             <div class="absolute inset-y-0 left-0 rounded" style="background:${item.color};opacity:0.35;width:${widthPct}%"></div>
             <div class="absolute inset-y-0 left-0 rounded" style="background:${item.color};width:${Math.min(widthPct, 3)}px;"></div>
             <div class="absolute inset-y-0 rounded" style="border-right:2px solid ${item.color};width:${widthPct}%"></div>
           </div>
-          <span class="text-xs font-medium text-slate-300 font-mono w-24 text-right">${displayVal}</span>
+          <span class="text-[11px] sm:text-xs font-medium text-slate-300 font-mono w-16 sm:w-24 text-right">${displayVal}</span>
         </div>`;
     }).join('');
   },

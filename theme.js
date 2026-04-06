@@ -58,8 +58,8 @@ const Theme = {
     return `
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 class="text-2xl font-semibold text-slate-100">${title}</h1>
-          <p class="text-sm text-slate-400 mt-1">${subtitle || DATA.meta.organization + ' — ' + DATA.meta.team}</p>
+          <h1 class="text-xl sm:text-2xl font-semibold text-slate-100">${title}</h1>
+          <p class="text-xs sm:text-sm text-slate-400 mt-1">${subtitle || DATA.meta.organization + ' — ' + DATA.meta.team}</p>
         </div>
         <div class="flex items-center gap-3" data-hide-pdf>
           <select id="month-selector" class="bg-slate-800 border border-slate-700 text-slate-300 rounded-lg px-3 py-1.5 text-sm font-mono focus:outline-none focus:border-slate-600">
@@ -78,10 +78,10 @@ const Theme = {
 
   statCard(label, value, subtitle, color) {
     return `
-      <div class="bg-slate-900 border border-slate-800 rounded-lg p-5 hover:border-slate-700 transition-colors">
-        <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">${label}</p>
-        <p class="text-2xl font-semibold text-slate-100 mt-1 font-mono" ${color ? `style="color:${color}"` : ''}>${value}</p>
-        ${subtitle ? `<p class="text-xs text-slate-500 mt-1">${subtitle}</p>` : ''}
+      <div class="bg-slate-900 border border-slate-800 rounded-lg p-3 sm:p-5 hover:border-slate-700 transition-colors">
+        <p class="text-[10px] sm:text-xs font-medium text-slate-500 uppercase tracking-wider">${label}</p>
+        <p class="text-lg sm:text-2xl font-semibold text-slate-100 mt-1 font-mono" ${color ? `style="color:${color}"` : ''}>${value}</p>
+        ${subtitle ? `<p class="text-[10px] sm:text-xs text-slate-500 mt-1">${subtitle}</p>` : ''}
       </div>`;
   },
 };
