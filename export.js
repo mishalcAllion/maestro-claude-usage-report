@@ -19,6 +19,25 @@ function exportToPDF() {
   // Add export-mode class to hide controls and add page-break rules
   document.body.classList.add('export-mode');
 
+  // Force desktop layout and explicit dark background so html2canvas captures correctly
+  const prevStyles = {
+    paddingTop: element.style.paddingTop,
+    backgroundColor: element.style.backgroundColor,
+    minWidth: element.style.minWidth,
+    maxWidth: element.style.maxWidth,
+  };
+  element.style.paddingTop = '32px';
+  element.style.backgroundColor = '#020617';
+  element.style.minWidth = '1200px';
+  element.style.maxWidth = '1200px';
+
+  const restoreStyles = () => {
+    element.style.paddingTop = prevStyles.paddingTop;
+    element.style.backgroundColor = prevStyles.backgroundColor;
+    element.style.minWidth = prevStyles.minWidth;
+    element.style.maxWidth = prevStyles.maxWidth;
+  };
+
   const options = {
     margin: [8, 8, 8, 8],
     filename: `Claude_Usage_Report_${monthLabel}.pdf`,
@@ -29,6 +48,8 @@ function exportToPDF() {
       logging: false,
       useCORS: true,
       letterRendering: true,
+      windowWidth: 1400,
+      windowHeight: 900,
     },
     jsPDF: {
       unit: 'mm',
@@ -45,6 +66,7 @@ function exportToPDF() {
 
   html2pdf().set(options).from(element).save().then(() => {
     document.body.classList.remove('export-mode');
+    restoreStyles();
     toast.innerHTML = `
       <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
@@ -57,6 +79,7 @@ function exportToPDF() {
     }, 2000);
   }).catch(err => {
     document.body.classList.remove('export-mode');
+    restoreStyles();
     toast.innerHTML = `
       <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>

@@ -1,7 +1,8 @@
 // charts.js — Pure CSS/JS chart renderers
 
 const Charts = {
-  donut(data, size = 180) {
+  donut(data, size = 180, formatter, showPercent = true) {
+    const fmt = formatter || Theme.formatCost;
     const total = data.reduce((sum, item) => sum + item.value, 0);
     const r = size / 2;
     const strokeWidth = size * 0.2;
@@ -28,8 +29,8 @@ const Charts = {
             <span class="text-xs text-slate-400 truncate">${Theme.escapeHtml(item.label)}</span>
           </div>
           <div class="flex items-center gap-2 flex-shrink-0">
-            <span class="text-xs font-medium text-slate-300 font-mono">${item.displayValue || Theme.formatCost(item.value)}</span>
-            <span class="text-[10px] text-slate-500">(${percentage}%)</span>
+            <span class="text-xs font-medium text-slate-300 font-mono">${item.displayValue || fmt(item.value)}</span>
+            ${showPercent ? `<span class="text-[10px] text-slate-500">(${percentage}%)</span>` : ''}
           </div>
         </div>`;
     }).join('');
@@ -43,7 +44,7 @@ const Charts = {
           <div class="absolute inset-0 flex items-center justify-center">
             <div class="text-center">
               <p class="text-xs text-slate-500 uppercase tracking-wider">Total</p>
-              <p class="text-lg font-semibold text-slate-100 font-mono mt-0.5">${Theme.formatCost(total)}</p>
+              <p class="text-lg font-semibold text-slate-100 font-mono mt-0.5">${fmt(total)}</p>
             </div>
           </div>
         </div>

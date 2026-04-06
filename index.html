@@ -38,39 +38,65 @@
   </main>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    let summaryView = 'cost';
+
+    function renderSummary() {
       const container = document.getElementById('export-content');
       const month = DATA.currentMonth;
       const summary = month.summary;
+      const topCostUser = month.computed.costRanking[0];
+      const topTokenUser = [...month.activeMembers].sort((a, b) => b.totalTokens - a.totalTokens)[0];
 
-      // Generate key insights
-      const topUser = month.computed.costRanking[0];
-      const avgCostPerDay = summary.avgCostPerActiveDay;
-      const adoptionRate = month.computed.teamAdoptionRate;
-      const totalActiveMembers = month.activeMembers.length;
-
-      const insights = [
-        `${topUser.short} leads usage at ${Theme.formatCost(topUser.totalCost)} (${Theme.formatTokens(topUser.totalTokens)} tokens)`,
-        `Team average: ${Theme.formatCost(avgCostPerDay)} per active day`,
-        `${Theme.formatPercent(adoptionRate)} team adoption rate across ${summary.teamSize} active members`,
-        `${summary.totalActiveDays} total active days recorded`,
-        `${summary.totalProjects} unique projects tracked`,
-      ];
-
-      // Cost distribution data for donut
+      // Cost distribution
       const costDistribution = month.activeMembers.map(m => ({
-        label: m.short,
-        value: m.totalCost,
-        color: m.color,
+        label: m.short, value: m.totalCost, color: m.color,
       })).sort((a, b) => b.value - a.value);
 
-      // Activity data for horizontal bar
-      const activityData = month.computed.activityRanking.map(m => ({
-        name: m.short,
-        value: m.activeDays,
-        color: m.color,
-        displayValue: `${m.activeDays} days`,
-      }));
+      // Token distribution
+      const tokenDistribution = month.activeMembers.map(m => ({
+        label: m.short, value: m.totalTokens, color: m.color,
+      })).sort((a, b) => b.value - a.value);
+
+      // View-specific data
+      const isCost = summaryView === 'cost';
+      const donutData = isCost ? costDistribution : tokenDistribution;
+      const donutTitle = isCost ? 'Cost Distribution' : 'Token Distribution';
+
+      const insights = isCost ? [
+        `${topCostUser.short} leads spend at ${Theme.formatCost(topCostUser.totalCost)} (${Theme.formatPercent(topCostUser.totalCost / summary.totalCost * 100)} of total)`,
+        `Team average: ${Theme.formatCost(summary.avgCostPerActiveDay)} per active day`,
+        `Average cost per person: ${Theme.formatCost(summary.avgCostPerPerson)}`,
+        `${Theme.formatPercent(month.computed.teamAdoptionRate)} team adoption rate across ${summary.teamSize} members`,
+        `${summary.totalProjects} unique projects tracked`,
+      ] : [
+        `${topTokenUser.short} leads token usage at ${Theme.formatTokens(topTokenUser.totalTokens)} (${Theme.formatPercent(topTokenUser.totalTokens / summary.totalTokens * 100)} of total)`,
+        `Total input tokens: ${Theme.formatTokens(summary.totalInputTokens)} — total output: ${Theme.formatTokens(summary.totalOutputTokens)}`,
+        `Output/input ratio: ${(summary.totalOutputTokens / summary.totalInputTokens).toFixed(2)}x across the team`,
+        `Average tokens per person: ${Theme.formatTokens(Math.round(summary.totalTokens / summary.teamSize))}`,
+        `Average tokens per active day: ${Theme.formatTokens(Math.round(summary.totalTokens / summary.totalActiveDays))}`,
+      ];
+
+      // Activity bar — switch between active days and token usage
+      const activityData = isCost
+        ? month.computed.activityRanking.map(m => ({
+            name: m.short, value: m.activeDays, color: m.color,
+            displayValue: `${m.activeDays} days`,
+          }))
+        : [...month.activeMembers].sort((a, b) => b.totalTokens - a.totalTokens).map(m => ({
+            name: m.short, value: m.totalTokens, color: m.color,
+            displayValue: Theme.formatTokens(m.totalTokens),
+          }));
+
+      const activityTitle = isCost ? 'Team Activity' : 'Token Usage by Member';
+      const activityMax = isCost ? 25 : undefined;
+
+      const toggleBtn = (label, value) => {
+        const active = summaryView === value;
+        return `<button onclick="summaryView='${value}';renderSummary()"
+          class="px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${active ? 'bg-slate-700 text-slate-100 border border-slate-600' : 'bg-slate-900 text-slate-400 border border-slate-800 hover:bg-slate-800 hover:text-slate-300'}">
+          ${label}
+        </button>`;
+      };
 
       container.innerHTML = `
         ${Theme.pageHeader('Executive Summary', DATA.meta.organization + ' — ' + DATA.meta.team)}
@@ -78,17 +104,24 @@
         <!-- Stat Cards -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8 pdf-no-break">
           ${Theme.statCard('Total Cost', Theme.formatCost(summary.totalCost), month.label)}
-          ${Theme.statCard('Total Tokens', Theme.formatTokens(summary.totalTokens), 'Input + Output')}
+          ${Theme.statCard('Total Tokens', Theme.formatTokens(summary.totalTokens), Theme.formatTokens(summary.totalInputTokens) + ' in / ' + Theme.formatTokens(summary.totalOutputTokens) + ' out')}
           ${Theme.statCard('Team Size', summary.teamSize + ' Members', summary.pendingCount + ' pending')}
           ${Theme.statCard('Total Active Days', Theme.formatNumber(summary.totalActiveDays), 'Across all members')}
         </div>
 
+        <!-- View Toggle -->
+        <div class="flex items-center gap-2 mb-6" data-hide-pdf>
+          <span class="text-xs text-slate-500 uppercase tracking-wider mr-2">View:</span>
+          ${toggleBtn('Cost', 'cost')}
+          ${toggleBtn('Tokens', 'tokens')}
+        </div>
+
         <!-- 2-Column Layout -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 pdf-no-break">
-          <!-- Cost Distribution -->
+          <!-- Distribution Donut -->
           <div class="bg-slate-900 border border-slate-800 rounded-lg p-6">
-            <h2 class="text-sm font-semibold text-slate-100 mb-6 uppercase tracking-wider">Cost Distribution</h2>
-            ${Charts.donut(costDistribution)}
+            <h2 class="text-sm font-semibold text-slate-100 mb-6 uppercase tracking-wider">${donutTitle}</h2>
+            ${Charts.donut(donutData, 180, isCost ? Theme.formatCost : Theme.formatTokens, false)}
           </div>
 
           <!-- Key Insights -->
@@ -115,15 +148,17 @@
           </div>
         </div>
 
-        <!-- Team Activity -->
+        <!-- Team Activity / Token Usage -->
         <div class="bg-slate-900 border border-slate-800 rounded-lg p-6 pdf-page-break-before">
-          <h2 class="text-sm font-semibold text-slate-100 mb-6 uppercase tracking-wider">Team Activity</h2>
+          <h2 class="text-sm font-semibold text-slate-100 mb-6 uppercase tracking-wider">${activityTitle}</h2>
           <div class="space-y-1">
-            ${Charts.horizontalBar(activityData, 25)}
+            ${Charts.horizontalBar(activityData, activityMax)}
           </div>
         </div>
       `;
-    });
+    }
+
+    document.addEventListener('DOMContentLoaded', renderSummary);
   </script>
 </body>
 </html>
